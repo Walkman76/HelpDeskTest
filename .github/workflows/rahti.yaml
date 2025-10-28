@@ -17,7 +17,9 @@ jobs:
       - name: Login to Rahti
         run: |
           oc login ${{ secrets.RAHTI_SERVER }} --token=${{ secrets.RAHTI_TOKEN }}
+          echo "Inloggad som: ${oc whoami}"
           oc project ${{ secrets.RAHTI_PROJECT }}
+          echo "Token expires in: ${oc whoami --show-token | awk '{print $1}'}"
 
       - name: Start build
         run:
