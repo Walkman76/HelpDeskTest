@@ -9,7 +9,7 @@ console.log(`Node.js ${process.version}`)
 app.use(express.json())
 
 app.get('/', (req, res) => {
-    res.json({ msg: "Rahti2 node 0.2.4 from main" })
+    res.json({ msg: "Rahti2 node 0.2.5 from main" })
 })
 
 const botRouter = require('./routes/bot')
