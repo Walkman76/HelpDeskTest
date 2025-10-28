@@ -20,6 +20,15 @@ jobs:
           oc project ${{ secrets.RAHTI_PROJECT }}
 
       - name: Start build
-        run: |
+        run:
           oc start-build help-desk-test
+
+      - name: Deploy
+        run: 
           oc rollout restart deployment/help-desk-test
+      
+      - name: test
+        run: |
+          echo "Running smoke tests"
+          # curl http://<service-url>/health
+
