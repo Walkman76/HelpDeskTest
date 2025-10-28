@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: help-desk-test
-        image: image-registry.rahti.csc.fi/arcada-devops/help-desk-test:latest
+        image: image-registry.openshift-image-registry.svc:5000/arcada-devops/help-desk-test:latest
         ports:
         - containerPort: 8080

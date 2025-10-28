@@ -1,0 +1,18 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: help-desk-test
+spec:
+  source:
+    type: Git
+    git:
+      uri: 'https://github.com/Walkman76/HelpDeskTest'
+      ref: main
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'help-desk-test:latest'
