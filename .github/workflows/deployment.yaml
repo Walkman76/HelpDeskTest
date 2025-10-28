@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: help-desk-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: help-desk-test
+  template:
+    metadata:
+      labels:
+        app: help-desk-test
+    spec:
+      containers:
+      - name: help-desk-test
+        image: image-registry.rahti.csc.fi/arcada-devops/help-desk-test:latest
+        ports:
+        - containerPort: 8080

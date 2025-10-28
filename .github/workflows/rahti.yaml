@@ -1,0 +1,49 @@
+name: Deploy to Rahti
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Bygg Docker-image
+      - name: Build Docker image
+        run: |
+          docker build -t image-registry.rahti.csc.fi/${{ secrets.RAHTI_PROJECT }}/help-desk-test:latest .
+
+      # Logga in till Rahti:s interna registry
+      - name: Login to Rahti registry
+        run: |
+          echo ${{ secrets.RAHTI_TOKEN }} | docker login image-registry.rahti.csc.fi -u github-deployer --password-stdin
+
+      # Push image till Rahti registry
+      - name: Push image to Rahti registry
+        run: |
+          docker push image-registry.rahti.csc.fi/${{ secrets.RAHTI_PROJECT }}/help-desk-test:latest
+
+      # Installera oc CLI
+      - name: Install OpenShift CLI
+        run: |
+          curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+          tar -xzf openshift-client-linux.tar.gz
+          sudo mv oc /usr/local/bin/
+
+      # Deploya till Rahti
+      - name: Deploy to Rahti
+        run: |
+          oc login ${{ secrets.RAHTI_SERVER }} --token=${{ secrets.RAHTI_TOKEN }}
+          oc project ${{ secrets.RAHTI_PROJECT }}
+
+          # Skapa deployment första gången om den inte finns
+          if ! oc get deployment help-desk-test >/dev/null 2>&1; then
+            oc apply -f deployment.yaml
+          fi
+
+          # Uppdatera imagen och rulla ut
+          oc set image deployment/help-desk-test help-desk-test=image-registry.rahti.csc.fi/${{ secrets.RAHTI_PROJECT }}/help-desk-test:latest --record
+          oc rollout restart deployment/help-desk-test
